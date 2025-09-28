@@ -1,0 +1,11 @@
+{
+  "result_id": "demo-test-run-2024_test_power_efficiency_210146_886828",
+  "run_id": "demo-test-run-2024",
+  "test_name": "test_power_efficiency",
+  "outcome": "SKIPPED",
+  "start_time": "2025-09-28T21:01:46.886843",
+  "duration": 0.0,
+  "logs": null,
+  "error_message": "Hardware not available",
+  "measurements": []
+}

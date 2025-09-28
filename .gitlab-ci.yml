@@ -1,0 +1,295 @@
+# Electronics HAL - GitLab CI/CD Pipeline
+# Comprehensive pipeline for quality, testing, and deployment
+
+stages:
+  - quality
+  - test
+  - security
+  - build
+  - deploy
+
+variables:
+  PYTHON_VERSION: "3.11"
+  UV_VERSION: "0.4.0"
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: "/certs"
+
+# Templates for reusability
+.python_template: &python_template
+  image: python:${PYTHON_VERSION}-slim
+  before_script:
+    - apt-get update && apt-get install -y git curl build-essential
+    - pip install uv==$UV_VERSION
+    - uv venv
+    - uv sync --frozen
+    - source .venv/bin/activate
+
+.docker_template: &docker_template
+  image: docker:24-dind
+  services:
+    - docker:24-dind
+  before_script:
+    - docker info
+
+# Code Quality Stage
+code_quality:
+  <<: *python_template
+  stage: quality
+  script:
+    - ruff check . --output-format=gitlab
+    - ruff format --check .
+    - mypy hal/ --show-error-codes
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json
+    expire_in: 1 week
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# Unit Tests
+unit_tests:
+  <<: *python_template
+  stage: test
+  parallel:
+    matrix:
+      - PYTHON_VERSION: ["3.10", "3.11", "3.12"]
+  script:
+    - pytest tests/unit/ -v --junitxml=report.xml --cov=hal --cov-report=xml --cov-report=term
+  artifacts:
+    reports:
+      junit: report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    expire_in: 1 week
+  coverage: '/^TOTAL.+?(\d+\%)$/'
+
+# Integration Tests
+integration_tests:
+  <<: *python_template
+  stage: test
+  script:
+    - python integration_test.py
+    - pytest tests/integration/ -v --junitxml=integration-report.xml
+  artifacts:
+    reports:
+      junit: integration-report.xml
+    expire_in: 1 week
+
+# Hardware Simulation Tests
+simulation_tests:
+  <<: *python_template
+  stage: test
+  script:
+    - python test_rohde_schwarz.py
+    - pytest tests/simulation/ -v --junitxml=simulation-report.xml
+  artifacts:
+    reports:
+      junit: simulation-report.xml
+    expire_in: 1 week
+
+# Security Scanning
+security_scan:
+  <<: *python_template
+  stage: security
+  script:
+    - uv add safety bandit
+    - safety check --json --output safety-report.json || true
+    - bandit -r hal/ -f json -o bandit-report.json || true
+  artifacts:
+    reports:
+      sast: bandit-report.json
+    paths:
+      - safety-report.json
+      - bandit-report.json
+    expire_in: 1 week
+
+# License Compliance
+license_check:
+  <<: *python_template
+  stage: security
+  script:
+    - uv add pip-licenses
+    - pip-licenses --format=json --output-file=licenses.json
+    - pip-licenses --format=csv --output-file=licenses.csv
+  artifacts:
+    paths:
+      - licenses.json
+      - licenses.csv
+    expire_in: 1 week
+
+# Docker Build
+docker_build:
+  <<: *docker_template
+  stage: build
+  script:
+    - docker build -t electronics-hal:$CI_COMMIT_SHA .
+    - docker run --rm electronics-hal:$CI_COMMIT_SHA python -c "import hal; print('HAL imports successfully')"
+    - docker tag electronics-hal:$CI_COMMIT_SHA electronics-hal:latest
+  artifacts:
+    paths:
+      - docker-image.tar
+    expire_in: 1 hour
+
+# Docker Compose Validation
+docker_compose_test:
+  <<: *docker_template
+  stage: build
+  script:
+    - docker-compose -f docker-compose.yml config
+    - docker-compose -f docker-compose.yml -f docker/docker-compose.dev.yml config
+    - docker-compose -f docker-compose.yml build --no-cache
+
+# Performance Benchmarks (scheduled only)
+performance_tests:
+  <<: *python_template
+  stage: test
+  script:
+    - uv add pytest-benchmark
+    - pytest tests/performance/ --benchmark-json=benchmark-results.json
+  artifacts:
+    paths:
+      - benchmark-results.json
+    expire_in: 1 month
+  only:
+    - schedules
+    - /^.*benchmark.*$/
+
+# Documentation Build
+documentation:
+  <<: *python_template
+  stage: build
+  script:
+    - uv add sphinx sphinx-rtd-theme
+    - cd docs && make html
+  artifacts:
+    paths:
+      - docs/_build/html/
+    expire_in: 1 week
+  only:
+    - main
+    - develop
+
+# Deploy to Development
+deploy_dev:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache curl docker-compose
+  script:
+    - echo "Deploying to development environment"
+    - curl -X POST "$WEBHOOK_DEV" -H "Content-Type:application/json" -d '{"ref":"'$CI_COMMIT_SHA'"}'
+  environment:
+    name: development
+    url: https://hal-dev.example.com
+  only:
+    - develop
+  when: manual
+
+# Deploy to Staging
+deploy_staging:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache curl
+  script:
+    - echo "Deploying to staging environment"
+    - curl -X POST "$WEBHOOK_STAGING" -H "Content-Type:application/json" -d '{"ref":"'$CI_COMMIT_SHA'"}'
+  environment:
+    name: staging
+    url: https://hal-staging.example.com
+  only:
+    - main
+  when: manual
+
+# Deploy to Production
+deploy_production:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache curl
+  script:
+    - echo "Deploying to production environment"
+    - curl -X POST "$WEBHOOK_PROD" -H "Content-Type:application/json" -d '{"ref":"'$CI_COMMIT_SHA'"}'
+  environment:
+    name: production
+    url: https://hal.example.com
+  only:
+    - main
+  when: manual
+  allow_failure: false
+
+# Container Registry Push
+push_container:
+  <<: *docker_template
+  stage: deploy
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker tag electronics-hal:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker tag electronics-hal:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE:latest
+  only:
+    - main
+    - develop
+
+# Release Creation
+create_release:
+  stage: deploy
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  script:
+    - echo "Creating release for version $CI_COMMIT_TAG"
+  release:
+    name: 'Release $CI_COMMIT_TAG'
+    description: 'Release created using the release-cli.'
+    tag_name: '$CI_COMMIT_TAG'
+    ref: '$CI_COMMIT_TAG'
+  only:
+    - tags
+
+# Cleanup
+cleanup:
+  stage: .post
+  image: alpine:latest
+  script:
+    - echo "Cleaning up temporary artifacts"
+  when: always
+
+# Pipeline notifications
+notify_success:
+  stage: .post
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache curl
+  script:
+    - echo "✅ Pipeline completed successfully!"
+    - |
+      if [ ! -z "$SLACK_WEBHOOK" ]; then
+        curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"✅ Electronics HAL Pipeline Success: '"$CI_PIPELINE_URL"'"}' \
+          $SLACK_WEBHOOK
+      fi
+  when: on_success
+  only:
+    - main
+    - develop
+
+notify_failure:
+  stage: .post
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache curl
+  script:
+    - echo "❌ Pipeline failed!"
+    - |
+      if [ ! -z "$SLACK_WEBHOOK" ]; then
+        curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"❌ Electronics HAL Pipeline Failed: '"$CI_PIPELINE_URL"'"}' \
+          $SLACK_WEBHOOK
+      fi
+  when: on_failure
+  only:
+    - main
+    - develop

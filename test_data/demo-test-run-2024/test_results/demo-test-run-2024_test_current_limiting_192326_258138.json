@@ -1,0 +1,32 @@
+{
+  "result_id": "demo-test-run-2024_test_current_limiting_192326_258138",
+  "run_id": "demo-test-run-2024",
+  "test_name": "test_current_limiting",
+  "outcome": "FAILED",
+  "start_time": "2025-09-28T19:23:26.258167",
+  "duration": 1.8,
+  "logs": null,
+  "error_message": "Current limit exceeded",
+  "measurements": [
+    {
+      "name": "max_current",
+      "value": 2.8,
+      "unit": "A",
+      "limits": {
+        "max": 2.5
+      },
+      "timestamp": "2025-09-28T19:23:26.258436",
+      "passed": false
+    },
+    {
+      "name": "current_accuracy",
+      "value": 2.1,
+      "unit": "%",
+      "limits": {
+        "max": 2.0
+      },
+      "timestamp": "2025-09-28T19:23:26.258853",
+      "passed": false
+    }
+  ]
+}

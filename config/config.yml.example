@@ -1,0 +1,14 @@
+power_supply:
+  address: USB0::0x0957::0x8C07::MY52200021::INSTR
+  timeout: 5000
+multimeter:
+  address: USB0::0x2A8D::0x0201::MY59003456::INSTR
+  timeout: 3000
+paths:
+  log_dir: logs
+  report_dir: reports
+  db_path: test_results.db
+logging:
+  level: INFO
+test_timeout: 300
+parallel_tests: false

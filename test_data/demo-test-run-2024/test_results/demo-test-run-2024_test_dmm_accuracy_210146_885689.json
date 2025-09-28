@@ -1,0 +1,32 @@
+{
+  "result_id": "demo-test-run-2024_test_dmm_accuracy_210146_885689",
+  "run_id": "demo-test-run-2024",
+  "test_name": "test_dmm_accuracy",
+  "outcome": "PASSED",
+  "start_time": "2025-09-28T21:01:46.885702",
+  "duration": 1.5,
+  "logs": null,
+  "error_message": null,
+  "measurements": [
+    {
+      "name": "dc_accuracy",
+      "value": 0.012,
+      "unit": "%",
+      "limits": {
+        "max": 0.02
+      },
+      "timestamp": "2025-09-28T21:01:46.885939",
+      "passed": true
+    },
+    {
+      "name": "ac_accuracy",
+      "value": 0.045,
+      "unit": "%",
+      "limits": {
+        "max": 0.05
+      },
+      "timestamp": "2025-09-28T21:01:46.886273",
+      "passed": true
+    }
+  ]
+}

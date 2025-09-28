@@ -1,0 +1,79 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "electronics-hal"
+version = "0.1.0"
+description = "Modern Hardware Test Ecosystem with Hardware Abstraction Layer"
+authors = [{name = "Your Name", email = "your.email@example.com"}]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "pyyaml>=6.0",
+    "pandas>=2.0",
+    "jinja2>=3.1",
+    "pytest>=7.0",
+    "pytest-html>=3.0",
+    "pyvisa>=1.14",
+    "pyvisa-py>=0.7",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["hal"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest-cov>=4.0",
+    "mypy>=1.0",
+    "types-pyyaml",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --strict-markers"
+markers = [
+    "unit: Unit tests that don't require hardware",
+    "integration: Integration tests using mock instruments",
+    "hardware: Tests that require physical hardware",
+    "power_management: Power supply related tests",
+    "measurement: Measurement and DMM related tests",
+    "signal_generation: Function generator related tests",
+    "slow: Tests that take more than 5 seconds",
+    "parametrize: Parametrized tests with multiple data sets"
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[dependency-groups]
+dev = [
+    "mypy>=1.18.2",
+    "ruff>=0.13.2",
+    "types-pyyaml>=6.0.12.20250915",
+]

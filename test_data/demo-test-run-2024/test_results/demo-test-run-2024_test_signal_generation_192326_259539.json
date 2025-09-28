@@ -1,0 +1,44 @@
+{
+  "result_id": "demo-test-run-2024_test_signal_generation_192326_259539",
+  "run_id": "demo-test-run-2024",
+  "test_name": "test_signal_generation",
+  "outcome": "PASSED",
+  "start_time": "2025-09-28T19:23:26.259555",
+  "duration": 3.2,
+  "logs": null,
+  "error_message": null,
+  "measurements": [
+    {
+      "name": "frequency",
+      "value": 1000.1,
+      "unit": "Hz",
+      "limits": {
+        "min": 999.0,
+        "max": 1001.0
+      },
+      "timestamp": "2025-09-28T19:23:26.259802",
+      "passed": true
+    },
+    {
+      "name": "amplitude",
+      "value": 3.28,
+      "unit": "V",
+      "limits": {
+        "min": 3.2,
+        "max": 3.4
+      },
+      "timestamp": "2025-09-28T19:23:26.260222",
+      "passed": true
+    },
+    {
+      "name": "thd",
+      "value": 0.02,
+      "unit": "%",
+      "limits": {
+        "max": 0.05
+      },
+      "timestamp": "2025-09-28T19:23:26.260688",
+      "passed": true
+    }
+  ]
+}

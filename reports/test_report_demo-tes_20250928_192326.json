@@ -1,0 +1,288 @@
+{
+  "test_run": {
+    "run_id": "demo-test-run-2024",
+    "start_time": "2025-09-28T19:23:26.255561",
+    "end_time": "2025-09-28T19:23:26.263092",
+    "status": "COMPLETED",
+    "configuration_snapshot": {
+      "power_supply": null,
+      "multimeter": null,
+      "oscilloscope": null,
+      "function_generator": null,
+      "paths": {
+        "log_dir": "logs",
+        "report_dir": "reports",
+        "test_data_dir": "test_data"
+      },
+      "logging": {
+        "level": "INFO",
+        "format_console": "%(asctime)s - %(name)s - %(levelname)s - %(run_id)s - %(message)s",
+        "format_file": "{\"timestamp\": \"%(asctime)s\", \"logger\": \"%(name)s\", \"level\": \"%(levelname)s\", \"run_id\": \"%(run_id)s\", \"message\": \"%(message)s\"}"
+      },
+      "test_timeout": 300,
+      "parallel_tests": false
+    },
+    "total_tests": 5,
+    "passed_tests": 3,
+    "failed_tests": 1,
+    "skipped_tests": 1,
+    "test_results": [
+      {
+        "result_id": 0,
+        "test_name": "test_voltage_regulation",
+        "outcome": "RUNNING",
+        "start_time": "2025-09-28T19:20:58.991562",
+        "duration": 0.0,
+        "logs": null,
+        "error_message": null,
+        "measurements": []
+      },
+      {
+        "result_id": 0,
+        "test_name": "test_voltage_regulation",
+        "outcome": "PASSED",
+        "start_time": "2025-09-28T19:23:26.256157",
+        "duration": 2.1,
+        "logs": null,
+        "error_message": null,
+        "measurements": [
+          {
+            "measurement_id": 0,
+            "name": "output_voltage",
+            "value": 5.02,
+            "unit": "V",
+            "limits": {
+              "min": 4.95,
+              "max": 5.05
+            },
+            "timestamp": "2025-09-28T19:23:26.256502",
+            "passed": true
+          },
+          {
+            "measurement_id": 0,
+            "name": "ripple_voltage",
+            "value": 0.003,
+            "unit": "V",
+            "limits": {
+              "max": 0.01
+            },
+            "timestamp": "2025-09-28T19:23:26.256976",
+            "passed": true
+          },
+          {
+            "measurement_id": 0,
+            "name": "load_regulation",
+            "value": 0.15,
+            "unit": "%",
+            "limits": {
+              "max": 0.5
+            },
+            "timestamp": "2025-09-28T19:23:26.257445",
+            "passed": true
+          }
+        ]
+      },
+      {
+        "result_id": 0,
+        "test_name": "test_current_limiting",
+        "outcome": "FAILED",
+        "start_time": "2025-09-28T19:23:26.258167",
+        "duration": 1.8,
+        "logs": null,
+        "error_message": "Current limit exceeded",
+        "measurements": [
+          {
+            "measurement_id": 0,
+            "name": "max_current",
+            "value": 2.8,
+            "unit": "A",
+            "limits": {
+              "max": 2.5
+            },
+            "timestamp": "2025-09-28T19:23:26.258436",
+            "passed": false
+          },
+          {
+            "measurement_id": 0,
+            "name": "current_accuracy",
+            "value": 2.1,
+            "unit": "%",
+            "limits": {
+              "max": 2.0
+            },
+            "timestamp": "2025-09-28T19:23:26.258853",
+            "passed": false
+          }
+        ]
+      },
+      {
+        "result_id": 0,
+        "test_name": "test_signal_generation",
+        "outcome": "PASSED",
+        "start_time": "2025-09-28T19:23:26.259555",
+        "duration": 3.2,
+        "logs": null,
+        "error_message": null,
+        "measurements": [
+          {
+            "measurement_id": 0,
+            "name": "frequency",
+            "value": 1000.1,
+            "unit": "Hz",
+            "limits": {
+              "min": 999.0,
+              "max": 1001.0
+            },
+            "timestamp": "2025-09-28T19:23:26.259802",
+            "passed": true
+          },
+          {
+            "measurement_id": 0,
+            "name": "amplitude",
+            "value": 3.28,
+            "unit": "V",
+            "limits": {
+              "min": 3.2,
+              "max": 3.4
+            },
+            "timestamp": "2025-09-28T19:23:26.260222",
+            "passed": true
+          },
+          {
+            "measurement_id": 0,
+            "name": "thd",
+            "value": 0.02,
+            "unit": "%",
+            "limits": {
+              "max": 0.05
+            },
+            "timestamp": "2025-09-28T19:23:26.260688",
+            "passed": true
+          }
+        ]
+      },
+      {
+        "result_id": 0,
+        "test_name": "test_dmm_accuracy",
+        "outcome": "PASSED",
+        "start_time": "2025-09-28T19:23:26.261370",
+        "duration": 1.5,
+        "logs": null,
+        "error_message": null,
+        "measurements": [
+          {
+            "measurement_id": 0,
+            "name": "dc_accuracy",
+            "value": 0.012,
+            "unit": "%",
+            "limits": {
+              "max": 0.02
+            },
+            "timestamp": "2025-09-28T19:23:26.261618",
+            "passed": true
+          },
+          {
+            "measurement_id": 0,
+            "name": "ac_accuracy",
+            "value": 0.045,
+            "unit": "%",
+            "limits": {
+              "max": 0.05
+            },
+            "timestamp": "2025-09-28T19:23:26.262012",
+            "passed": true
+          }
+        ]
+      },
+      {
+        "result_id": 0,
+        "test_name": "test_power_efficiency",
+        "outcome": "SKIPPED",
+        "start_time": "2025-09-28T19:23:26.262655",
+        "duration": 0.0,
+        "logs": null,
+        "error_message": "Hardware not available",
+        "measurements": []
+      }
+    ]
+  },
+  "generation_time": "2025-09-28T19:23:26.264302",
+  "report_version": "1.0",
+  "summary_stats": {
+    "run_id": "demo-test-run-2024",
+    "status": "COMPLETED",
+    "duration": 0.007531,
+    "total_tests": 5,
+    "passed_tests": 3,
+    "failed_tests": 1,
+    "skipped_tests": 1,
+    "success_rate": 60.0,
+    "total_measurements": 10,
+    "passed_measurements": 8,
+    "failed_measurements": 2,
+    "measurement_success_rate": 80.0,
+    "generation_time": "2025-09-28 19:23:26.264302",
+    "report_version": "1.0"
+  },
+  "failed_tests": [
+    {
+      "result_id": 0,
+      "test_name": "test_current_limiting",
+      "outcome": "FAILED",
+      "start_time": "2025-09-28T19:23:26.258167",
+      "duration": 1.8,
+      "logs": null,
+      "error_message": "Current limit exceeded",
+      "measurements": [
+        {
+          "measurement_id": 0,
+          "name": "max_current",
+          "value": 2.8,
+          "unit": "A",
+          "limits": {
+            "max": 2.5
+          },
+          "timestamp": "2025-09-28T19:23:26.258436",
+          "passed": false
+        },
+        {
+          "measurement_id": 0,
+          "name": "current_accuracy",
+          "value": 2.1,
+          "unit": "%",
+          "limits": {
+            "max": 2.0
+          },
+          "timestamp": "2025-09-28T19:23:26.258853",
+          "passed": false
+        }
+      ]
+    }
+  ],
+  "failed_measurements_by_test": {
+    "test_current_limiting": [
+      {
+        "measurement_id": 0,
+        "name": "max_current",
+        "value": 2.8,
+        "unit": "A",
+        "limits": {
+          "max": 2.5
+        },
+        "timestamp": "2025-09-28T19:23:26.258436",
+        "passed": false
+      },
+      {
+        "measurement_id": 0,
+        "name": "current_accuracy",
+        "value": 2.1,
+        "unit": "%",
+        "limits": {
+          "max": 2.0
+        },
+        "timestamp": "2025-09-28T19:23:26.258853",
+        "passed": false
+      }
+    ]
+  }
+}

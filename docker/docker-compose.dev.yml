@@ -1,0 +1,65 @@
+# Development override for Docker Compose
+# Provides development-friendly configuration
+
+version: '3.8'
+
+services:
+  electronics-hal:
+    volumes:
+      # Mount source code for live development
+      - .:/app
+      # Override data directories for development
+      - ./dev-data/logs:/app/logs
+      - ./dev-data/reports:/app/reports
+      - ./dev-data/test_data:/app/test_data
+    environment:
+      - HAL_LOG_LEVEL=DEBUG
+      - PYTHONPATH=/app
+      # Enable hot reload for development
+      - FLASK_DEBUG=1
+    # Override command for development
+    command: ["python", "-m", "hal.cli", "dev", "--watch"]
+
+  hal-dashboard:
+    volumes:
+      # Mount source code for live development
+      - .:/app
+    environment:
+      - HAL_DASHBOARD_DEBUG=true
+      - HAL_LOG_LEVEL=DEBUG
+    # Enable development mode
+    command: ["python", "-m", "hal.monitoring.dashboard_server", "--debug"]
+
+  # Development database for testing
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: hal-postgres-dev
+    environment:
+      - POSTGRES_DB=hal_dev
+      - POSTGRES_USER=hal_dev
+      - POSTGRES_PASSWORD=hal_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - hal-postgres-dev:/var/lib/postgresql/data
+    networks:
+      - hal-network
+
+  # Development tools container
+  dev-tools:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hal-dev-tools
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+    networks:
+      - hal-network
+    # Keep container running for exec commands
+    command: ["tail", "-f", "/dev/null"]
+
+volumes:
+  hal-postgres-dev:
+    driver: local

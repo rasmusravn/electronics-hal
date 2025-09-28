@@ -1,0 +1,43 @@
+{
+  "result_id": "demo-test-run-2024_test_voltage_regulation_210146_876918",
+  "run_id": "demo-test-run-2024",
+  "test_name": "test_voltage_regulation",
+  "outcome": "PASSED",
+  "start_time": "2025-09-28T21:01:46.876944",
+  "duration": 2.1,
+  "logs": null,
+  "error_message": null,
+  "measurements": [
+    {
+      "name": "output_voltage",
+      "value": 5.02,
+      "unit": "V",
+      "limits": {
+        "min": 4.95,
+        "max": 5.05
+      },
+      "timestamp": "2025-09-28T21:01:46.877291",
+      "passed": true
+    },
+    {
+      "name": "ripple_voltage",
+      "value": 0.003,
+      "unit": "V",
+      "limits": {
+        "max": 0.01
+      },
+      "timestamp": "2025-09-28T21:01:46.877687",
+      "passed": true
+    },
+    {
+      "name": "load_regulation",
+      "value": 0.15,
+      "unit": "%",
+      "limits": {
+        "max": 0.5
+      },
+      "timestamp": "2025-09-28T21:01:46.881582",
+      "passed": true
+    }
+  ]
+}

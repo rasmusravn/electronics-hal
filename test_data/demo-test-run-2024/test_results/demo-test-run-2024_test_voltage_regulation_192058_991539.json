@@ -1,0 +1,11 @@
+{
+  "result_id": "demo-test-run-2024_test_voltage_regulation_192058_991539",
+  "run_id": "demo-test-run-2024",
+  "test_name": "test_voltage_regulation",
+  "outcome": "RUNNING",
+  "start_time": "2025-09-28T19:20:58.991562",
+  "duration": 0.0,
+  "logs": null,
+  "error_message": null,
+  "measurements": []
+}
